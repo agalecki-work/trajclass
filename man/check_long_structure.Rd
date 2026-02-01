@@ -4,14 +4,14 @@
 \alias{check_long_structure}
 \title{Check structure of longitudinal data in long format}
 \usage{
-check_long_structure(data, id_col = "id", time_col = "time")
+check_long_structure(data, id_col, time_col)
 }
 \arguments{
 \item{data}{A data frame in long format (one row per observation per subject)}
 
-\item{id_col}{String. Name of the subject identifier column (default: \code{"id"})}
+\item{id_col}{\strong{Required.} String. Name of the subject identifier column.}
 
-\item{time_col}{String. Name of the time/visit/measurement occasion column (default: \code{"time"})}
+\item{time_col}{\strong{Required.} String. Name of the time/visit/measurement occasion column.}
 }
 \value{
 A named list with three components:
@@ -34,7 +34,7 @@ Verifies whether a longitudinal dataset in long format has:
 \details{
 The function:
 \enumerate{
-\item Converts the ID column to character (if it is a factor). Message is issued
+\item Converts the ID column to character (if it is a factor). A message is issued.
 \item Sorts the data by ID and time
 \item Checks whether rows with the same ID are consecutive and times are non-decreasing within each ID
 \item Detects duplicate (ID, time) pairs
@@ -43,21 +43,27 @@ The function:
 }
 \note{
 \itemize{
-\item The function assumes \code{time_col} is numeric (or something \code{diff()} can handle). If \code{time} is a Date/POSIXct,
-consider converting it to numeric days beforehand.
+\item The function assumes the time column is numeric (or something \code{diff()} can handle). If time is a Date/POSIXct,
+convert it to numeric days beforehand.
+\item \code{id_col} and \code{time_col} are \strong{required} (no defaults) to avoid silent assumptions about column names.
 \item Because the package depends on \code{segmented} (which loads \code{MASS}), we deliberately avoid broad preferences
-for \code{dplyr::select}. Use explicit \code{dplyr::select()} when needed in your code.
+for \code{dplyr::select}. Use explicit \code{dplyr::select()} when needed.
 }
 }
 \examples{
 \dontrun{
-# Basic usage
-data(example_data)
-result <- check_long_structure(example_egfr_data)
-str(result)
-result$classification
-
+# Basic usage – must supply both column names
+result <- check_long_structure(
+  data     = example_data,
+  id_col   = "ID",
+  time_col = "time"
+)
+names(result)
+result$is_properly_sorted
+result$has_no_duplicate_id_time
+tvars <- result$classification
+glimpse(tvars)
 }
 
-
 }
+\keyword{internal}

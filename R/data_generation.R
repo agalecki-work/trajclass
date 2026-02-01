@@ -12,19 +12,36 @@
 #' @param years Numeric vector of time points (default: 0:26)
 #' @param baseline_y Starting value of the outcome (default: 125)
 #' @param noise_sd Standard deviation of Gaussian noise (default: 2)
-#' @param key_vars Named list defining column names for id, time, and outcome
-#'   (default: `list(id_col = "id", time_col = "time", y_col = "y")`)
+#' @param key_vars **Required.** Named character vector defining column names  
+#'   Example: `c(id_col = "ID", time_col = "time", y_col = "egfr")`
 #'
 #' @return A tibble with columns named according to `key_vars` + `true_pattern`
 #' @keywords internal
 generate_one_trajectory <- function(
+    key_vars,
     id,
     pattern,
     years = 0:26,
     baseline_y = 125,
-    noise_sd = 2,
-    key_vars = list(id_col = "id", time_col = "time", y_col = "y")
+    noise_sd = 2
 ) {
+  if (missing(key_vars) || is.null(key_vars)) {
+    stop("Argument 'key_vars' is required. Example: c(id_col = 'ID', time_col = 'time', y_col = 'egfr')")
+  }
+  
+  if (!is.character(key_vars) || is.null(names(key_vars))) {
+    stop("'key_vars' must be a named character vector")
+  }
+  
+  required_names <- c("id_col", "time_col", "y_col")
+  if (!all(required_names %in% names(key_vars))) {
+    stop("key_vars must contain names: ", paste(required_names, collapse = ", "))
+  }
+  
+  id_col   <- key_vars["id_col"]
+  time_col <- key_vars["time_col"]
+  y_col    <- key_vars["y_col"]
+  
   e <- stats::rnorm(length(years), sd = noise_sd)
   
   if (pattern == "linear") {
@@ -48,10 +65,10 @@ generate_one_trajectory <- function(
   }
   
   tibble::tibble(
-    !!key_vars$id_col   := as.character(id),
-    !!key_vars$time_col := years,
-    !!key_vars$y_col    := y,
-    true_pattern        = pattern
+    "{id_col}"   := as.character(id),
+    "{time_col}" := years,
+    "{y_col}"    := y,
+    true_pattern = pattern
   )
 }
 
@@ -61,48 +78,65 @@ generate_one_trajectory <- function(
 #' Creates a balanced dataset with multiple trajectories per pattern,
 #' including controlled proportions of missing values.
 #'
+#' Rows where **any** of the columns specified in `key_vars` (`id_col`, `time_col`, `y_col`) is missing (`NA`)
+#' are excluded from the final output.
+#'
 #' The built-in dataset `example_data` was created using default parameters
 #' of this function (`n_sub = 1`, `pct_miss = c(0,10,50,90)`).
 #'
+#' @param key_vars **Required.** Named character vector defining column names  
+#'   Example: `c(id_col = "ID", time_col = "time", y_col = "egfr")`
 #' @param n_sub Number of subjects (trajectories) **per pattern** and **per missingness level** (default: 1)
 #' @param pct_miss Numeric vector of missingness percentages (default: c(0,10,50,90))
 #' @param years Time points (default: 0:26)
 #' @param baseline_y Starting value of the outcome variable (default: 125)
 #' @param noise_sd Standard deviation of measurement noise (default: 2)
 #' @param seed Random seed for reproducibility (default: NULL)
-#' @param key_vars Named list defining column names for id, time, and outcome  
-#'   Default: `list(id_col = "id", time_col = "time", y_col = "y")`
 #'
-#' @return A tibble with columns named according to `key_vars` + `true_pattern` (character)
+#' @return A tibble with columns named according to `key_vars` + `true_pattern` (character).  
+#'   Rows with missing values in any of the `key_vars` columns are excluded.
 #'
 #' @examples
-#' set.seed(20250116)
+#' \dontrun{
 #' 
-#' # Default column names
-#' sim_default <- generate_synthetic_data(n_sub = 2, pct_miss = c(0, 30))
-#' str(sim_default)           # columns: id, time, y, true_pattern
-#' 
-#' # Custom column names
-#' sim_custom <- generate_synthetic_data(
-#'   n_sub = 1,
-#'   pct_miss = c(0, 50),
-#'   key_vars = list(
-#'     id_col   = "ID",
-#'     time_col = "time",
-#'     y_col    = "egfr"
-#'   )
+#' sim <- generate_synthetic_data(
+#'   key_vars = c(id_col = "ID", time_col = "time", y_col = "egfr"),
+#'   n_sub = 2,
+#'   pct_miss = c(0, 30)
 #' )
-#' colnames(sim_custom)            # columns: ID, time, egfr, true_pattern
+#' colnames(sim)           # columns: ID, time, egfr, true_pattern
+#' nrow(sim)
+#' tail(sim)
+#`
+#' # Check key_vars for missing values in ID, time, or egfr
+#' any(is.na(sim$ID))     # should be FALSE
+#' any(is.na(sim$time))   # should be FALSE
+#' any(is.na(sim$egfr))   # should be FALSE
+#' }
 #' @export
+
 generate_synthetic_data <- function(
+    key_vars,
     n_sub = 1,
     pct_miss = c(0, 10, 50, 90),
     years = 0:26,
     baseline_y = 125,
     noise_sd = 2,
-    seed = NULL,
-    key_vars = list(id_col = "id", time_col = "time", y_col = "y")
+    seed = NULL
 ) {
+  if (missing(key_vars)) {
+    stop("Argument 'key_vars' is required. Example: c(id_col = 'ID', time_col = 'time', y_col = 'egfr')")
+  }
+  
+  if (!is.character(key_vars) || is.null(names(key_vars))) {
+    stop("'key_vars' must be a named character vector")
+  }
+  
+  required_names <- c("id_col", "time_col", "y_col")
+  if (!all(required_names %in% names(key_vars))) {
+    stop("key_vars must contain names: ", paste(required_names, collapse = ", "))
+  }
+
   if (!is.null(seed)) set.seed(seed)
 
   patterns <- c("linear", "quadratic", "hockey_stick")
@@ -134,16 +168,19 @@ generate_synthetic_data <- function(
     .f = function(id, pattern, pct_miss) {
 
       traj <- generate_one_trajectory(
+        key_vars    = key_vars,
         id          = id,
         pattern     = pattern,
         years       = years,
         baseline_y  = baseline_y,
-        noise_sd    = noise_sd,
-        key_vars    = key_vars
+        noise_sd    = noise_sd
       )
 
-      # Apply missingness to outcome column
-      y_col <- key_vars$y_col
+      # Apply missingness only to outcome column
+      y_col    <- key_vars["y_col"]
+      time_col <- key_vars["time_col"]
+      id_col   <- key_vars["id_col"]
+
       n <- nrow(traj)
       if (pct_miss > 0 && pct_miss <= 100) {
         n_miss <- round(n * pct_miss / 100)
@@ -164,7 +201,19 @@ generate_synthetic_data <- function(
     }
   )
 
+  # ── Exclude rows where ANY key_vars column is missing ───────────────────────
+  id_col   <- key_vars["id_col"]
+  time_col <- key_vars["time_col"]
+  y_col    <- key_vars["y_col"]
+
+  trajectories <- trajectories |>
+    dplyr::filter(
+      !is.na(.data[[id_col]]),
+      !is.na(.data[[time_col]]),
+      !is.na(.data[[y_col]])
+    )
+
   # Final sorting
   trajectories |>
-    dplyr::arrange(.data[[key_vars$id_col]], .data[[key_vars$time_col]])
+    dplyr::arrange(.data[[id_col]], .data[[time_col]])
 }

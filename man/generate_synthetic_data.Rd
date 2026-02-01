@@ -5,16 +5,19 @@
 \title{Generate synthetic trajectory dataset for testing}
 \usage{
 generate_synthetic_data(
+  key_vars,
   n_sub = 1,
   pct_miss = c(0, 10, 50, 90),
   years = 0:26,
   baseline_y = 125,
   noise_sd = 2,
-  seed = NULL,
-  key_vars = list(id_col = "id", time_col = "time", y_col = "y")
+  seed = NULL
 )
 }
 \arguments{
+\item{key_vars}{\strong{Required.} Named character vector defining column names
+Example: \code{c(id_col = "ID", time_col = "time", y_col = "egfr")}}
+
 \item{n_sub}{Number of subjects (trajectories) \strong{per pattern} and \strong{per missingness level} (default: 1)}
 
 \item{pct_miss}{Numeric vector of missingness percentages (default: c(0,10,50,90))}
@@ -26,37 +29,36 @@ generate_synthetic_data(
 \item{noise_sd}{Standard deviation of measurement noise (default: 2)}
 
 \item{seed}{Random seed for reproducibility (default: NULL)}
-
-\item{key_vars}{Named list defining column names for id, time, and outcome
-Default: \code{list(id_col = "id", time_col = "time", y_col = "y")}}
 }
 \value{
-A tibble with columns named according to \code{key_vars} + \code{true_pattern} (character)
+A tibble with columns named according to \code{key_vars} + \code{true_pattern} (character).
+Rows with missing values in any of the \code{key_vars} columns are excluded.
 }
 \description{
 Creates a balanced dataset with multiple trajectories per pattern,
 including controlled proportions of missing values.
 }
 \details{
+Rows where \strong{any} of the columns specified in \code{key_vars} (\code{id_col}, \code{time_col}, \code{y_col}) is missing (\code{NA})
+are excluded from the final output.
+
 The built-in dataset \code{example_data} was created using default parameters
 of this function (\code{n_sub = 1}, \code{pct_miss = c(0,10,50,90)}).
 }
 \examples{
-set.seed(20250116)
+\dontrun{
 
-# Default column names
-sim_default <- generate_synthetic_data(n_sub = 2, pct_miss = c(0, 30))
-str(sim_default)           # columns: id, time, y, true_pattern
-
-# Custom column names
-sim_custom <- generate_synthetic_data(
-  n_sub = 1,
-  pct_miss = c(0, 50),
-  key_vars = list(
-    id_col   = "ID",
-    time_col = "time",
-    y_col    = "egfr"
-  )
+sim <- generate_synthetic_data(
+  key_vars = c(id_col = "ID", time_col = "time", y_col = "egfr"),
+  n_sub = 2,
+  pct_miss = c(0, 30)
 )
-colnames(sim_custom)            # columns: ID, time, egfr, true_pattern
+colnames(sim)           # columns: ID, time, egfr, true_pattern
+nrow(sim)
+tail(sim)
+# Check key_vars for missing values in ID, time, or egfr
+any(is.na(sim$ID))     # should be FALSE
+any(is.na(sim$time))   # should be FALSE
+any(is.na(sim$egfr))   # should be FALSE
+}
 }

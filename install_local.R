@@ -1,14 +1,14 @@
 
 # Make sure you have devtools (once)
-# install.packages("devtools")
-
-# Then, from any working directory:
-# devtools::install("C:/ATG/github/trajclass")
-# or using Windows-style backslashes (both usually work)
-
-### devtools::install_deps()
-# devtools::install("C:\\ATG\\github\\trajclass") # skips tests by default
 setwd("C:/ATG/github/trajclass")
+# Delete man/ + other generated files
+unlink(c("man", "NAMESPACE"), recursive = TRUE)
+
+# Re-generate everything
+devtools::document()
+# devtools::load_all()
+# devtools::document()
+devtools::install() # skips tests by default
 
 library(conflicted)
 # library(dplyr)
@@ -23,29 +23,40 @@ sort(getNamespaceExports("trajclass"))
 ls("package:trajclass")
 
 # ?prefer_tidyverbs
+# ?example_data
+
+# ?longdata_myinfo
 # ?check_long_structure
 # ?generate_synthetic_data
-?create_traj
-?subset_traj
+# ?example_data
+# ????create_traj_all
 
-data(example_data)
-colnames(example_data)
+trajclass_options()
+options(trajclass.key_vars = c(id_col = "ID", time_col = "time", y_col = "egfr"))
+trajclass_options() # → only shows options the user has modified, such as key_vars
+orig_keys <- getOption("trajclass.key_vars", default = NULL )
 
-# ?check_long_structure
-# ?extract_egfrtibble
-res <- extract_egfrtibble(example_egfr_data)
 
-# Quick inspection
-class(res)                                 # "egfrtibble" + tibble classes
-dim(res)                                   # rows × 3 (id, time, egfr)
-attr(res, "origdata_info")$final_subjects  # usually "All"
+# trajclass_options(all = TRUE) 
+# → shows everything currently set (even if default)
 
-# ?subset_egfrtibble
+# STEP 1: df returned with class `traj_data` inheriting from
+# ?create_traj_data
+ 
+traj_df <- create_traj_data(example_data, key_vars = orig_keys)
 
-res <- extract_egfrtibble(example_egfr_data)
 
-# Get all unique IDs from the original data
-all_ids <- unique(example_egfr_data$id)
+# ?create_traj1_set
+traj1_set <- create_traj1_set(traj_df)
+class(traj1_set)
+
+traj1 <-  traj1_set[["1_30"]]
+
+
+fit1 <- traj1_fit(traj1) 
+# ?traj1_fit
+names(fit1)
+fit1$fit_info
 
 
 

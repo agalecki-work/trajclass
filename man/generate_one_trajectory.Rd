@@ -5,15 +5,18 @@
 \title{Generate a single synthetic trajectory}
 \usage{
 generate_one_trajectory(
+  key_vars,
   id,
   pattern,
   years = 0:26,
   baseline_y = 125,
-  noise_sd = 2,
-  key_vars = list(id_col = "id", time_col = "time", y_col = "y")
+  noise_sd = 2
 )
 }
 \arguments{
+\item{key_vars}{\strong{Required.} Named character vector defining column names
+Example: \code{c(id_col = "ID", time_col = "time", y_col = "egfr")}}
+
 \item{id}{Identifier for the trajectory (will be coerced to character)}
 
 \item{pattern}{One of: "linear", "quadratic", "hockey_stick"}
@@ -23,9 +26,6 @@ generate_one_trajectory(
 \item{baseline_y}{Starting value of the outcome (default: 125)}
 
 \item{noise_sd}{Standard deviation of Gaussian noise (default: 2)}
-
-\item{key_vars}{Named list defining column names for id, time, and outcome
-(default: \code{list(id_col = "id", time_col = "time", y_col = "y")})}
 }
 \value{
 A tibble with columns named according to \code{key_vars} + \code{true_pattern}
