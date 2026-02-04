@@ -1,5 +1,8 @@
-# Create traj1_set object and save it in an external file for later use
+### Execute this script From fresh R session and check for errors, if any
+
+# Aim: Create traj1_set object and save it in an external file for later use
 getwd()
+packageVersion("trajclass")
 library(conflicted)
 # library(dplyr)
 # library(tidyr)   
@@ -40,6 +43,6 @@ names(traj1_set)
 
 traj1_set <- create_traj1_set(prj_setup)
 class(traj1_set)
-save(traj1_set, file = "C:/temp/traj1_set_object.rda")  # you may choose different directory
+save(traj1_set, file = "./traj1_set_object.rda")  # saved in current working directory (you may choose different directory)
 
 

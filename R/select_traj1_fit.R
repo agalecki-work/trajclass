@@ -49,13 +49,13 @@ select_traj1_fit <- function(x, idx = 1L) {
   }
   
   res <- model_fit
-  attr(res, "fit_info") <- fit_info_row
+  if (!is.null(res)) attr(res, "fit_info") <- fit_info_row
   
   
   # Preserve original attributes (except names/class/row.names)
   attrs <- attributes(x)
   attrs_keep <- attrs[!names(attrs) %in% c("names", "class", "row.names")]
-  attributes(res) <- c(attributes(res), attrs_keep)
+  if (!is.null(res)) attributes(res) <- c(attributes(res), attrs_keep)
   
   # Assign class vector: child → parent → list
   
