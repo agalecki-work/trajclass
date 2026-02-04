@@ -13,9 +13,8 @@ trajclass_options <- function(all = FALSE) {
    # Original defaults (hard-coded so we can compare)
   if (!all) {
      defaults <- list(
-      trajclass.key_vars           = c(id_col = "", time_col = "", y_co = ""),
-      trajclass.nper_sub           = 10L,
-      trajclass.davies_p_value     = 0.20
+      trajclass.davies_p_value     = 0.20,
+      trajclass.display_seg        = FALSE
       )
     
     # Only keep entries that are different or were not set by the package

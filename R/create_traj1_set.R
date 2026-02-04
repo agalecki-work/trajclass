@@ -40,15 +40,15 @@
 # names(attrx$traj1_info) # "traj_id"       "orig_key_vars" "nobs_persub" 
 #' }
 #' @export
-create_traj1_set <- function(
-    data,
-    nobs_persub = getOption("trajclass.nobs_persub",  default =  10),
-    .msg = TRUE
-) {
+create_traj1_set <- function(project_setup ){
   
-  datain_info <- inspect_parent_data(.msg = .msg)   # tibble with one  row
- 
-  # ── 1. Input validation ─────────────────────────────────────────────────────
+  # datain_info <- inspect_parent_data(.msg = .msg)   # tibble with one  row
+   data <- create_traj_data(project_setup)
+    # key_vars <-  project_setup$keys
+   # names(key_vars) <- c("id_col", "time_col", "y_col")
+   nobs_persub = project_setup$nobs_persub
+  
+# ── 1. Input validation ─────────────────────────────────────────────────────
   if (!inherits(data, "traj_data")) stop("incorrect argument for create_traj_object function")
   out <- data
   names(out) <- c("id", "time", "y")
@@ -76,14 +76,14 @@ create_traj1_set <- function(
   
      attr(x, "traj1_info") <- list(
        traj_id = x$id[1],
-       orig_key_vars = unname(orig_key_vars),
-       nobs_persub = nobs_persub
+       keys = project_setup$keys,
+       nobs_persub = project_setup$nobs_persub
      )
      class(x) <- c("traj1", class(x))
      x
   })
 
-     attr(out, "datain_info") <- datain_info
+     ## attr(out, "datain_info") <- datain_info
   class(out) <- c("traj1_set", class(data))
      out
   }

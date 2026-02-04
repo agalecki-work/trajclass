@@ -4,21 +4,17 @@
 \alias{create_traj1_set}
 \title{Create standardized trajectory object}
 \usage{
-create_traj1_set(
-  data,
-  nobs_persub = getOption("trajclass.nobs_persub", default = 10),
-  .msg = TRUE
-)
+create_traj1_set(project_setup)
 }
 \arguments{
 \item{data}{A data frame or tibble with longitudinal data}
 
-\item{nobs_persub}{Minimum number of non-missing observations per subject
-(default = 5). Subjects with fewer valid rows are excluded.}
-
 \item{key_vars}{\strong{Required.} Named character vector of length 3 defining the column names
 Must have names \code{"id_col"}, \code{"time_col"}, \code{"y_col"}
 Example: \code{c(id_col = "ID", time_col = "time", y_col = "egfr")}}
+
+\item{nobs_persub}{Minimum number of non-missing observations per subject
+(default = 5). Subjects with fewer valid rows are excluded.}
 }
 \value{
 A tibble with standardized columns \code{"id"}, \code{"time"}, \code{"y"} and class:

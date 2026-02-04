@@ -46,13 +46,13 @@
 #' }
 #'
 #' @export
-create_traj_data <- function(data, 
-         key_vars = getOption("trajclass.key_vars", default = NULL) , 
-         .msg = TRUE
-         ) {
-  datain_info <- inspect_parent_data(.msg = .msg)   # tibble with one row
- 
-  
+create_traj_data <- function(project_setup) {
+  # datain_info <- inspect_parent_data(.msg = .msg)   # tibble with one row
+  data <- project_setup$data
+  key_vars <-  project_setup$keys
+  names(key_vars) <- c("id_col", "time_col", "y_col")
+
+   example_project_setup
   # ── Input validation ────────────────────────────────────────────────────────
   stopifnot(is.data.frame(data))
 
@@ -121,7 +121,7 @@ create_traj_data <- function(data,
  
   info <- list(
        orig_key_vars = as.list(key_vars),
-       datain = datain_info, 
+       # datain = datain_info, 
        dataout  = out_info   #    tibble with one row     
   )
 

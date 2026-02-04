@@ -12,7 +12,8 @@
 #'
 #' @export
 traj1_fit <- function(x, 
-                davies_p_threshold = getOption("trajclass.davies_p_value", NULL)
+                davies_p_value = getOption("trajclass.davies_p_value", NULL),
+                display_seg    = getOption("trajclass.display_seg", FALSE)
    ){
   
   # ── Input validation ─────────────────────────────────────────────────────────
@@ -55,7 +56,7 @@ traj1_fit <- function(x,
     ~model,      ~status,     ~message,                  ~valid,
     "linear",    "pending",   NA_character_,             FALSE,
     "quadratic", "pending",   NA_character_,             FALSE,
-    "segmented", "pending",   NA_character_,             FALSE
+    "hockey_stick", "pending",   NA_character_,             FALSE
   )
   
   # ── Safe fitting helper ──────────────────────────────────────────────────────
@@ -100,9 +101,9 @@ traj1_fit <- function(x,
     
     davies_p <- davies_res$p.value
     
-    if (!is.na(davies_p) && davies_p > davies_p_threshold) {
+    if (!is.na(davies_p) && davies_p > davies_p_value) {
       msg <- sprintf("Davies p = %.3f > %.2f → no strong breakpoint evidence",
-                     davies_p, davies_p_threshold)
+                     davies_p, davies_p_value)
       fit_seg$status  <- "skipped"
       fit_seg$message <- msg
       fit_seg$valid   <- FALSE
@@ -130,7 +131,7 @@ traj1_fit <- function(x,
               n.boot  = 15L,
               it.max  = 40L,
               tol     = 1e-5,
-              display = FALSE
+              display = display_seg
             )
           ),
           error   = function(e) NULL,
@@ -153,9 +154,9 @@ traj1_fit <- function(x,
               message = NA_character_,
               valid   = TRUE
             )
-            status_df$status[status_df$model == "segmented"]  <- "ok"
-            status_df$message[status_df$model == "segmented"] <- sprintf("converged (psi ≈ %.2f)", psi_est)
-            status_df$valid[status_df$model == "segmented"]   <- TRUE
+            status_df$status[status_df$model == "hockey_stick"]  <- "ok"
+            status_df$message[status_df$model == "hockey_stick"] <- sprintf("converged (psi ≈ %.2f)", psi_est)
+            status_df$valid[status_df$model == "hockey_stick"]   <- TRUE
             break  # success → stop trying other starts
           }
         }
@@ -165,29 +166,39 @@ traj1_fit <- function(x,
       if (fit_seg$status != "ok") {
         msg <- "failed to converge with multiple psi starting values"
         fit_seg$message <- msg
-        status_df$message[status_df$model == "segmented"] <- msg
-        status_df$status[status_df$model == "segmented"]  <- "failed"
-        status_df$valid[status_df$model == "segmented"]   <- FALSE
+        status_df$message[status_df$model == "hockey_stick"] <- msg
+        status_df$status[status_df$model == "hockey_stick"]  <- "failed"
+        status_df$valid[status_df$model == "hockey_stick"]   <- FALSE
       }
     }
   }
   
   # ── Final result ─────────────────────────────────────────────────────────────
-  key_vars <- c("id", "time", "y")
-  
  
+  t1 <- x
+  t1_info <- attributes(t1)$traj1_info
+  key_nms <- t1_info$keys
+  key_nm1 <- key_nms[1]
+  attributes(t1) <- NULL
+  names(t1) <- key_nms
+  df <- as_tibble(t1)
+   
   result <- list(
-    fits  = list(
+    fit  = list(
       linear    = fit_lin$model,
       quadratic = fit_quad$model,
-      segmented = fit_seg$model
-    ),
-    traj1 = x,
+      hockey_stick = fit_seg$model
+    ))
+
+  attrs <- list(
+    traj1_id = df[[key_nm1]][1],  
+    df = df,
+    fit_options = trajclass_options(all =TRUE),
     fit_info = status_df
   )
   
   # Attach metadata
-  # attr(result, "traj_attrs") <- traj_attrs
+  attr(result, "attrs_list") <- attrs
   class(result) <- "traj1_fit"
   
   result

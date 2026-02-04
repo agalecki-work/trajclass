@@ -4,11 +4,7 @@
 \alias{create_traj_data}
 \title{Create a base trajectory data object (pre-processing step)}
 \usage{
-create_traj_data(
-  data,
-  key_vars = getOption("trajclass.key_vars", default = NULL),
-  .msg = TRUE
-)
+create_traj_data(project_setup)
 }
 \arguments{
 \item{data}{A data frame or tibble in long format}

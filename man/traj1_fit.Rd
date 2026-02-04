@@ -4,7 +4,11 @@
 \alias{traj1_fit}
 \title{Fit linear, quadratic and segmented models on traj1 trajectory data}
 \usage{
-traj1_fit(x, davies_p_threshold = getOption("trajclass.davies_p_value", NULL))
+traj1_fit(
+  x,
+  davies_p_value = getOption("trajclass.davies_p_value", NULL),
+  display_seg = getOption("trajclass.display_seg", FALSE)
+)
 }
 \arguments{
 \item{x}{Object of class \code{traj1} — tibble with columns \code{id}, \code{time}, \code{y} for one subject
