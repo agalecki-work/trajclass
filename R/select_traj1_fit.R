@@ -31,7 +31,8 @@ select_traj1_fit <- function(x, idx = 1L) {
   selected_name <- model_names[idx]
   
   model_fit <- x[[1]][[selected_name]]
-  # print(model_fit)
+  if(is.null(model_fit)) return(NULL)
+  
   attrs_all <- attributes(x)
   fit_info  <-  attrs_all$attrs_list$fit_info
   
@@ -49,13 +50,14 @@ select_traj1_fit <- function(x, idx = 1L) {
   }
   
   res <- model_fit
-  if (!is.null(res)) attr(res, "fit_info") <- fit_info_row
+  
+  attr(res, "fit_info") <- fit_info_row
   
   
   # Preserve original attributes (except names/class/row.names)
   attrs <- attributes(x)
   attrs_keep <- attrs[!names(attrs) %in% c("names", "class", "row.names")]
-  if (!is.null(res)) attributes(res) <- c(attributes(res), attrs_keep)
+  attributes(res) <- c(attributes(res), attrs_keep)
   
   # Assign class vector: child → parent → list
   

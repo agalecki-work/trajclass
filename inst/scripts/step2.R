@@ -1,6 +1,6 @@
 ### # Execute this script From fresh R session and check for errors, if any
 
-# Examine  traj1_set object that data for all subjects with sufficient number of valid observations
+# Examine data for one subject selected from `traj1_set object created in Step 1
 getwd()
 
 library(conflicted)
@@ -20,8 +20,10 @@ length(traj1_set)
 subject_names <- names(traj1_set) # Select one subject from this list
 print(head(subject_names))
 
-# extract object `traj1` from `traj1_set` objectwith data for one subject and examine it
-traj1 <-  traj1_set[["1_30"]]  # one subject selected
+.traj_id = "1_30"   # Corresponds to subject name
+
+# extract object `traj1` from `traj1_set` object with data for one subject and examine it
+traj1 <-  traj1_set[[.traj_id]]  # one subject selected
 typeof(traj1)
 class(traj1)
 glimpse(traj1)
@@ -72,42 +74,4 @@ cat("idx_best =", idx_best, "\n")
 fit_best <- select_traj1_fit(fit1, idx = idx_best)
 gg <- my_glimpse(fit_best)
 glimpse(gg)
-
-# Hockey stick model fits for all subjects
-
-hstick_fits <- lapply(traj1_set, function(x) {
-     fit_s3 <- traj1_fit(x)
-     res <- select_traj1_fit(fit_s3, idx = 3)
-     if (is.null(res)) print("Result is NULL")
-     res
-})
-
-gfits <- lapply(hstick_fits, my_glimpse)
-
-#  BEST model fits for all subjects. go through all subjects in traj1_set and save best model fits  in a list
-
-best_model_fits  <- lapply(traj1_set, function(x){
-    fit1 <- traj1_fit(x)
-    idx_best <- best_model_traj1(fit1,  return = "index")
-    select_traj1_fit(fit1, idx = idx_best)
-
-})
-
-# glimpse tables for best models appended vertically (for later use)
-
-gfits <- lapply(best_model_fits, my_glimpse)
-gfits_all <- bind_rows(gfits)
-names(gfits_all)
-
-
-# Augment tables for best models appended vertically (for later use)
-
-augs <- lapply(best_model_fits, my_augment)
-augs_best <- bind_rows(augs)
-augs_best
-
-# glimpse tables for hockey_stick models fitted to
-
-
-
 

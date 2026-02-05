@@ -1,6 +1,6 @@
 Package: trajclass
 Title: Classification of Longitudinal Trajectories / Time Series
-Version: 0.0.0.9005
+Version: 0.0.0.9007
 Authors@R: 
     person("First", "Last", , "first.last@example.com", role = c("aut", "cre"))
 Description: Tools for preparing and classifying longitudinal trajectories 
