@@ -52,7 +52,6 @@ create_traj_data <- function(project_setup) {
   key_vars <-  project_setup$keys
   names(key_vars) <- c("id_col", "time_col", "y_col")
 
-   example_project_setup
   # ── Input validation ────────────────────────────────────────────────────────
   stopifnot(is.data.frame(data))
 
