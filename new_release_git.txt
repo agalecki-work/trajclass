@@ -1,0 +1,23 @@
+Bump version
+
+
+Must be clean
+cd C:\ATG\github\trajclass
+git status
+
+
+# Create annotated git tag
+
+version <- packageVersion(   
+
+
+gert::git_tag_create("v0.2.0", "Version 0.2.0 - ...")
+
+
+# Push the tag to GitHub
+gert::git_push(refspec = "v0.2.0")
+
+
+
+
+
