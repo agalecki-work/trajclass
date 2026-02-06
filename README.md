@@ -17,9 +17,7 @@ and download selected release (in zip format)
 
 ```
 
-* Execute "step" scripts
-
-Set your working directory
+* Set your working directory
 
 ```
  setwd("~") # You are welcome to change working directory to a different folder
@@ -27,8 +25,10 @@ Set your working directory
 
 ```
 
+* Execute "step" scripts
+
 Execute scripts one by one in a sequence starting with `step0.R`. Execute each script in a fresh R session.
-For every script log file will be genearated in working directory
+For every script log file will be generated in working directory
 
 
 ```

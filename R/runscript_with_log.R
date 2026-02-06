@@ -33,7 +33,7 @@ runScript_with_log <- function(script_name,  # "step0.R"
   res <- tryCatch(
     source(script_path, echo = TRUE, max.deparse.length = max_deparse),
     error = function(e) {
-      message("Script stopped with error (see console above)")
+      message("Check for errors (see console above)")
       invisible(e)
     },
     warning = function(w) {

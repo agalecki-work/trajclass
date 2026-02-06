@@ -26,6 +26,6 @@ Future versions will add classification of trajectories into patterns
 (linear, quadratic, hockey-stick).
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com}
+\strong{Maintainer}: Andrzej T. Galecki \email{agalecki@umich.edu} (\href{https://orcid.org/0000-0003-1542-4001}{ORCID})
 
 }
