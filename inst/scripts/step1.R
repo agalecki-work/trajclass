@@ -1,6 +1,7 @@
 ### Execute this script From fresh R session and check for errors, if any
 
 # Aim: Create traj1_set object and save it in an external file for later use
+rm(list = ls())
 getwd()
 packageVersion("trajclass")
 library(conflicted)
@@ -31,7 +32,6 @@ class(traj_df) #  "traj_data"  "tbl_df"     "tbl"        "data.frame"
 
 # --- create_traj1_set
 
-
 traj1_set <- create_traj1_set(prj_setup)
 typeof(traj1_set)
 class(traj1_set)
@@ -44,5 +44,8 @@ names(traj1_set)
 traj1_set <- create_traj1_set(prj_setup)
 class(traj1_set)
 save(traj1_set, file = "./traj1_set_object.rda")  # saved in current working directory (you may choose different directory)
+messake("==== step1.R script execution completed ====")
+message("traj1_set object was saved in external file ./traj1_set_object.rda")
+message("Use ls() command to find out what other objects were created by this script")
 
 

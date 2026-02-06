@@ -1,6 +1,7 @@
-### # Execute this script From fresh R session and check for errors, if any
+### # Execute this script from fresh R session and check for errors, if any
 
 # Examine data for one subject selected from `traj1_set object created in Step 1
+rm(list = ls())
 getwd()
 
 library(conflicted)
@@ -13,14 +14,17 @@ library(parameters)
 #  conflicts()
 prefer_tidyverbs()
 packageVersion("trajclass")
+message("Load `traj1_set` object from external file")
+# OObject traj1_set  created by script stored in step1.R")
 
-load(file = "./traj1_set_object.rda")  # Load `traj1_set` object from external file created by script stored in step1.R 
+load(file = "./traj1_set_object.rda")  #  
 typeof(traj1_set)
 length(traj1_set) 
 subject_names <- names(traj1_set) # Select one subject from this list
 print(head(subject_names))
 
 .traj_id = "1_30"   # Corresponds to subject name
+message("Subject id =", .traj_id, " was selected for processing")
 
 # extract object `traj1` from `traj1_set` object with data for one subject and examine it
 traj1 <-  traj1_set[[.traj_id]]  # one subject selected
@@ -74,4 +78,10 @@ cat("idx_best =", idx_best, "\n")
 fit_best <- select_traj1_fit(fit1, idx = idx_best)
 gg <- my_glimpse(fit_best)
 glimpse(gg)
+
+messake("==== step1.R script execution completed ====")
+message("Use ls() command to find out what other objects were created by this script")
+
+
+
 

@@ -1,5 +1,8 @@
 # Execute this script From fresh R session and check for errors, if any
+rm(list = ls())
 getwd()  # check working directory
+
+message("Script step0.R from trajclass package executed")
 
 library(trajclass)
 packageDescription("trajclass")
